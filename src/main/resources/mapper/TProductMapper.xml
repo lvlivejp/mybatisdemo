@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lvlivejp.mybatisdemo.mapper.TProductMapper">
+
+    <!-- 开启二级缓存 -->
+    <cache/>
+    <!-- keyProperty 表示自增的主键对应javaBean的哪个属性-->
+    <insert id="insert" keyProperty="productCode">
+        insert into t_product(product_name) value (#{productName})
+    </insert>
+    <select id="selectById" resultType="tProduct">
+        select * from t_product where product_code=#{productCode}
+    </select>
+
+    <select id="selectReturnMap" resultType="tProduct">
+        select * from t_product
+    </select>
+
+    <select id="selectReturnList" resultType="tProduct">
+        select * from t_product
+    </select>
+
+    <select id="selectByIfAndWhere" resultType="tProduct">
+        select * from t_product
+        <where>
+            <if test="productCode!=null and productCode!=''">
+                product_code=#{productCode}
+            </if>
+            <if test="productName!=null and productName!=''">
+                and product_name=#{productName}
+            </if>
+            <if test="count!=null and count!=''">
+                and count=#{count}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateBySetAndIf">
+        update t_product
+        <set>
+            <if test="productName!=null and productName!=''">
+                product_name=#{productName},
+            </if>
+            <if test="count!=null and productName!=''">
+                count=#{count},
+            </if>
+        </set>
+        where product_code = #{productCode}
+    </update>
+
+    <select id="selectByForeach" resultType="tProduct">
+        select * from t_product
+        <foreach collection="ids" item="productCode" open="where product_code in (" close=")" separator=",">
+            #{productCode}
+        </foreach>
+    </select>
+
+    <insert id="batchInsertByForeach">
+        insert into t_product(product_name, start_date, end_date, count)
+        <foreach collection="products" item="product" open="values" separator=",">
+            (#{product.productName},#{product.startDate},#{product.endDate},#{product.count})
+        </foreach>
+    </insert>
+</mapper>

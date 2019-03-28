@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lvlivejp.mybatisdemo.mapper.TBuyInfoMapper">
+
+
+    <!-- 级联方式一 双引号标注级联类类名和字段 -->
+    <select id="selectBuyInfoAndProductById_1" resultType="tBuyInfo">
+        select b.product_code,b.user_id,b.buy_date,
+        p.product_code "tProduct.productCode",
+        p.product_name "tProduct.productName"
+        from t_buy_info b,t_product p where p.product_code=b.product_code and b.product_code=#{productCode} and b.user_id=#{userId}
+    </select>
+
+    <!-- 级联方式二 resultMap 级联属性方式 -->
+    <resultMap id="buyInfoMap1" type="tBuyInfo">
+        <result column="product_code" property="productCode"/>
+        <result column="user_id" property="userId"/>
+        <result column="p_productCode" property="tProduct.productCode"/>
+        <result column="p_productName" property="tProduct.productName"/>
+    </resultMap>
+    <select id="selectBuyInfoAndProductById_2" resultMap="buyInfoMap1">
+        select b.product_code,b.user_id,b.buy_date,
+        p.product_code p_productCode,
+        p.product_name p_productName
+        from t_buy_info b,t_product p where p.product_code=b.product_code and b.product_code=#{productCode} and b.user_id=#{userId}
+    </select>
+
+    <!-- 级联一对一或多对一 用association方式
+         级联一对多 用collection方式   -->
+    <!-- 级联方式三 resultMap association方式 -->
+    <resultMap id="buyInfoMap2" type="tBuyInfo">
+        <result column="product_code" property="productCode"/>
+        <result column="user_id" property="userId"/>
+        <association property="tProduct" javaType="TProduct">
+            <result column="p_productCode" property="productCode"/>
+            <result column="p_productName" property="productName"/>
+        </association>
+    </resultMap>
+    <select id="selectBuyInfoAndProductById_3" resultMap="buyInfoMap2">
+        select b.product_code,b.user_id,b.buy_date,
+        p.product_code p_productCode,
+        p.product_name p_productName
+        from t_buy_info b,t_product p where p.product_code=b.product_code and b.product_code=#{productCode} and b.user_id=#{userId}
+    </select>
+
+    <!-- 级联 分步执行 延迟加载
+        不开启延迟加载，会执行2次Sql
+        select:mapper.xml的selectId
+        column:对应数据库字典，不是javabean字段
+               也可以传多列 colum="{productCode=product_code,productName=product_name}"
+        fetchType:可无视全局配置，单独配置延迟或提前加载
+    -->
+    <resultMap id="buyInfoMapStep" type="tBuyInfo">
+        <result column="product_code" property="productCode"/>
+        <result column="user_id" property="userId"/>
+        <association property="tProduct" select="com.lvlivejp.mybatisdemo.mapper.TProductMapper.selectById"
+                     column="product_code" fetchType="lazy">
+            <result column="p_productCode" property="productCode"/>
+            <result column="p_productName" property="productName"/>
+        </association>
+    </resultMap>
+    <select id="selectBuyInfoAndProductByStep" resultMap="buyInfoMapStep">
+        select * from t_buy_info where product_code=#{productCode} and user_id=#{userId}
+        <if test=""/>
+    </select>
+</mapper>

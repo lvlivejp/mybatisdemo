@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    username: root
+    password: password
+    url: jdbc:mysql://192.168.10.11:3306/seckill
+
+mybatis:
+  configuration:
+    #insert是否返回自增主键
+    #在mapper.xml里insert的keyProperty指定主键字段
+    use-generated-keys: true
+    #是否匹配重命名列名
+    use-column-label: true
+    #是否启用驼峰命名转换
+    map-underscore-to-camel-case: true
+    #association和collection级联 延迟加载
+    lazy-loading-enabled: true
+    #association和collection级联级联 延迟加载 使用时才去查数据库
+    aggressive-lazy-loading: false
+    #开启二级缓存
+    cache-enabled: true
+  #Model类所在的包名,mapper.xml中的resultType可以直接写类名，不区分大小写
+  type-aliases-package: com.lvlivejp.mybatisdemo.model
+  #xml文件所在的目录
+  mapper-locations: classpath:mapper/*.xml
+
+logging:
+  level:
+    com.lvlivejp.mybatisdemo.mapper: debug
+
+pagehelper:
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+  helper-dialect: mysql
+
+mapper:
+  mappers:
+  - tk.mybatis.mapper.common.Mapper
+  notEmpty: true

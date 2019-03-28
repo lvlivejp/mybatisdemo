@@ -29,10 +29,16 @@ logging:
     com.lvlivejp.mybatisdemo.mapper: debug
 
 pagehelper:
+  helperDialect: mysql
   reasonable: true
-  support-methods-arguments: true
+  #是否支持startPage(Object pamas)自定义参数名
+  supportMethodsArguments: true
+  #设置pamas中count的Key为countSql，执行过程中，如果pamas中有key为countSql的值，则取对应的值，否则就为null
+  #count为boolean，所以countSql对应的值为true或false，true表示执行count的Sql，false反之
   params: count=countSql
-  helper-dialect: mysql
+  #CountSql的后缀，默认为selectId+"_COUNT"，可自定义，如果没找到自定义SQL，则还是执行默认的selectId+"_COUNT"语句
+  #默认的countSql为替换select字段为count(0)
+  countSuffix: _COUNT
 
 mapper:
   mappers:
